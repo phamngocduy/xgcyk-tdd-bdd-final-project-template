@@ -211,3 +211,54 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(found.count(), count)
         for product in found:
             self.assertEqual(product.price, price)
+
+    def test_serialize_a_product(self):
+        """It should Serialize a Product into a dictionary"""
+        product = ProductFactory()
+        product.create()
+        self.assertEqual(len(Product.all()), 1)
+        # Serialize the product
+        product_dict = product.serialize()
+        self.assertEqual(product_dict["id"], product.id)
+        self.assertEqual(product_dict["name"], product.name)
+        self.assertEqual(product_dict["description"], product.description)
+        self.assertEqual(product_dict["price"], str(product.price))
+        self.assertEqual(product_dict["available"], product.available)
+        self.assertEqual(product_dict["category"], product.category.name)
+
+    def test_deserialize_a_product(self):
+        """It should Deserialize a Product from a dictionary"""
+        product = ProductFactory()
+        product.create()
+        self.assertEqual(len(Product.all()), 1)
+        product_dict = product.serialize()
+        # Deserialize the product
+        deserialized_product = Product()
+        deserialized_product.deserialize(product_dict)
+        self.assertEqual(deserialized_product.name, product.name)
+        self.assertEqual(deserialized_product.description, product.description)
+        self.assertEqual(deserialized_product.price, product.price)
+        self.assertEqual(deserialized_product.available, product.available)
+        self.assertEqual(deserialized_product.category, product.category)
+
+    def test_deserialize_a_product_with_data_validation_error(self):
+        """Test raise DataValidationError"""
+        product = ProductFactory()
+        product.create()
+        self.assertEqual(len(Product.all()), 1)
+        # Test availability error
+        product_dict = product.serialize()
+        product_dict["available"] = "2"
+        self.assertRaises(DataValidationError, product.deserialize, product_dict)
+        # Test raising KeyError
+        product_dict = product.serialize()
+        del product_dict["name"]
+        self.assertRaises(DataValidationError, product.deserialize, product_dict)
+        # Test raising TypeError
+        product_dict = product.serialize()
+        product_dict["category"] = 0
+        self.assertRaises(DataValidationError, product.deserialize, product_dict)
+        # Test raising AttributeError
+        product_dict = product.serialize()
+        product_dict["category"] = "-1"
+        self.assertRaises(DataValidationError, product.deserialize, product_dict)
