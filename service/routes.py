@@ -106,7 +106,7 @@ def list_products():
     name = request.args.get("name")
     category = request.args.get("category")
     available = request.args.get("available")
-    
+
     if name:
         app.logger.info("Find by name: %s", name)
         products = Product.find_by_name(name)
@@ -128,6 +128,7 @@ def list_products():
     app.logger.info("[%s] Products returned", len(results))
     return results, status.HTTP_200_OK
 
+
 ######################################################################
 # R E A D   A   P R O D U C T
 ######################################################################
@@ -143,6 +144,7 @@ def get_products(product_id):
 
     app.logger.info("Returning product: %s", product.name)
     return product.serialize(), status.HTTP_200_OK
+
 
 ######################################################################
 # U P D A T E   A   P R O D U C T
@@ -163,6 +165,7 @@ def updated_products(product_id):
     product.update()
     return product.serialize(), status.HTTP_200_OK
 
+
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
@@ -175,5 +178,5 @@ def delete_products(product_id):
     product = Product.find(product_id)
     if product:
         product.delete()
-    
+
     return "", status.HTTP_204_NO_CONTENT

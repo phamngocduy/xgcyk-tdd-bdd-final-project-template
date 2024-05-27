@@ -28,8 +28,8 @@ import os
 import logging
 from decimal import Decimal
 from unittest import TestCase
-from service import app
 from urllib.parse import quote_plus
+from service import app
 from service.common import status
 from service.models import db, init_db, Product
 from tests.factories import ProductFactory
@@ -218,7 +218,7 @@ class TestProductRoutes(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_product = response.get_json()
         self.assertEqual(updated_product["description"], "unknown")
-    
+
     def test_delete_product(self):
         """It should Delete a Product"""
         products = self._create_products(5)
@@ -230,7 +230,7 @@ class TestProductRoutes(TestCase):
         # Make sure they are deleted
         response = self.client.get(f"{BASE_URL}/{test_product.id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        new_count =self.get_product_count()
+        new_count = self.get_product_count()
         self.assertEqual(new_count, product_count - 1)
 
     def test_get_product_list(self):
